@@ -8,59 +8,51 @@ int main(){
    pid_t pid_a,pid_b,pid_c,pid_d;
    const A = 2, B = 4, C = 6, D = 10;
    int status;
-   printf("Process A will create and wait for Processes B and C");
+   printf("Process A will create and wait for Processes B and C\n");
    pid_b = fork();
    if(pid_b<0){
-       printf("Error in Process Creation");
+       printf("Error in Process Creation\n");
    }
    else if(pid_b==0){
-       printf("Process B has started");
+       printf("Process B has started\n");
        pid_d = fork();
        if(pid_d<0){
-           printf("Error in creating a process");
+           printf("Error in creating a process\n");
        }
        else if(pid_d==0){
-           printf("Process D has been created");
-           sleep(10);
-           printf("Process D will now terminate");
+           printf("Process D has been created\n");
+           sleep(15);
+           printf("Process D will now terminate\n");
            exit(D);
        }
        else {
-           printf("Waiting for Process D to finish");
+           printf("Waiting for Process D to finish\n");
            wait(NULL);
-           printf("Process B has now finished.");
+           printf("Process B has now finished.\n");
            exit(B);
        }
    }
    else{
        pid_c = fork();
        if(pid_c<0){
-           printf("Error in creating Process C");
+           printf("Error in creating Process C\n");
        }
        else if(pid_c==0){
-           printf("Process C has been created");
-           printf("Process C will enter sleep now.");
-           sleep(10);
-           printf("Process C will now finish.");
+           printf("Process C has been created\n");
+           printf("Process C will enter sleep now.\n");
+           sleep(15);
+           printf("Process C will now finish.\n");
            exit(C);
        }
        else{
-           printf("Process A is waiting for Processes B and C to finish.");
-           wait(&status);
-           if(status==B){
-               printf("Process A has received the termination signal from Process B");
+           printf("Process A is waiting for Processes B and C to finish.\n");
+           int stat;
+           while(wait(&status)>0){
+               stat = WEXITSTATUS(status);
+               char processName = (stat==B) ? 'B':'C';
+               printf("Process %c has terminated.\n",processName);
            }
-           else{
-               printf("Process A has received the termination signal from Process C");
-           }
-           wait(&status);
-           if(status==B){
-               printf("Process A has received the termination signal from Process B");
-           }
-           else{
-               printf("Process A has received the termination signal from Process C");
-           }
-           printf("Process A will now termniate");
+           printf("Process A will now termniate\n");
        }
    }
 
