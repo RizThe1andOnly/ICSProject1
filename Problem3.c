@@ -22,13 +22,12 @@ int main(){
        else if(pid_d==0){
            printf("Process D has been created\n");
            sleep(15);
-           printf("Process D will now terminate\n");
            exit(D);
        }
        else {
-           printf("Waiting for Process D to finish\n");
+           printf("Process B is Waiting for Process D to finish\n");
            wait(NULL);
-           printf("Process B has now finished.\n");
+           printf("Process D has terminated\n");
            exit(B);
        }
    }
@@ -41,11 +40,9 @@ int main(){
            printf("Process C has been created\n");
            printf("Process C will enter sleep now.\n");
            sleep(15);
-           printf("Process C will now finish.\n");
            exit(C);
        }
        else{
-           printf("Process A is waiting for Processes B and C to finish.\n");
            int stat;
            while(wait(&status)>0){
                stat = WEXITSTATUS(status);
