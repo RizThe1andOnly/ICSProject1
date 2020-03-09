@@ -6,7 +6,7 @@
 //global constants to be used by functions
 const A = 2, B = 4, C = 6, D = 10;
 
-void slowProcessWithLoop(int slowLevel);
+void slowProcess(int slowLevel);
 void processB();
 void processC();
 void processD();
@@ -14,7 +14,7 @@ void processD();
 int main(){
     printf("Process A has started \n");
     int pid_a,pid_b,pid_c,pid_d,status;
-    slowProcessWithLoop(1);
+    slowProcess(1);
     printf("Process A will now create Processes B\n");
     pid_b = fork();
     if(pid_b<0){//error
@@ -50,7 +50,7 @@ int main(){
 /* method that will carry out the tasks for process B*/
 void processB(){
     printf("Process B has started.\n");
-    slowProcessWithLoop(1);
+    slowProcess(1);
     printf("Process B will now create Process D.\n");
     int pid_d = fork();
     if(pid_d<0){//error
@@ -69,7 +69,9 @@ void processB(){
 
 /* Method to carry out tasks for Process C*/
 void processC(){
-    printf("Process C has started.\nProcess C will now enter sleep.\n");
+    printf("Process C has started.\n");
+    slowProcess(1);
+    printf("Process C will now enter sleep.\n");
     sleep(15);
     exit(C);
 }
@@ -86,11 +88,12 @@ void processD(){
     Slow down execution of a process after certain events so that
     the process tree can be better observed.
  */
-void slowProcessWithLoop(int slowLevel){
+void slowProcess(int slowLevel){
     if(slowLevel == 1){
-        for(int i=0;i<1000;i++){
-            continue;
-        }
+        // for(int i=0;i<10000;i++){
+        //     continue;
+        // }
+        sleep(5);
     }
     else{
         for(int i=0;i<2000;i++){
