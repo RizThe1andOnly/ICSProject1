@@ -8,15 +8,17 @@ const A = 2, B = 4, C = 6, D = 10;
 
 int main(){
     //create process A:
-    pid_t pid_a = fork();
+    pid_t pid_a, pid_b, pid_c, pid_waited_for;
+    int status;
+
+    pid_a = fork();
     if(pid_a<0){//error
         printf("Error in creating process A\n");
     }
     else if(pid_a == 0){//in process A:
-        printf("Process A with PID: %ld has been created\n",(long)getpid);
-        
+        printf("Process A with PID: %ld or %ld has been created\n",(long)getpid,(long)pid_a);
+        sleep(5);
         //create process B and C
-        pid_t pid_b, pid_c;
         pid_b = fork();
         if(pid_b != 0) pid_c = fork();
 
@@ -30,8 +32,36 @@ int main(){
                 printf("Process %c has failed to start.\n");
             }
         }
-        else if()
+        else if(pid_b == 0){ //in process B
+            printf("Process B with PID: %ld has started.\n",(long)getpid());
+            sleep(5);
+            printf("Process B will now create Process D.\n");
+            pid_t pid_d = fork();
+            if(pid_d < 0 ){ //error in process creation
+                printf("Process D has failed to start. \n");
+            }
+            else if(pid_d == 0){ // in process D
+                printf("Process D with PID: %ld has started.\n",(long)getpid());
+                sleep(10);
+                exit(D);
+            }
+            // now in Process B, will do nothing now and exit the if statements to the wait statemetns below
+        }
+        else if(pid_c == 0){// in process C
+            printf("Process C with PID: %ld has strated.\n",(long)getpid());
+            sleep(5);
+            //process C will now exit out of these if statements and go to waiting block
+        }
+        // process A will now exit out of if statement block to go to waiting block
     }
+
+    //waiting block
+    do
+    {
+        pid_waited_for = wait(&status);
+        explain_wait_status(pid_waited_for,&status);
+    } while ((!pid_waited_for));
+    
 
 }
 
