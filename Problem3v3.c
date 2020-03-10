@@ -3,6 +3,11 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+/*
+    THIS ONE IS GARBAGE. THE PROPER ONE IS Problem3v2.c.
+*/
+
+
 const A = 2, B = 4, C = 6, D = 10;
 
 typedef struct tree_node
