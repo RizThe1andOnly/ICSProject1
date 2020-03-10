@@ -6,98 +6,59 @@
 //global constants to be used by functions
 const A = 2, B = 4, C = 6, D = 10;
 
-void slowProcess(int slowLevel);
-void processB();
-void processC();
-void processD();
-
 int main(){
-    printf("Process A has started \n");
-    int pid_a,pid_b,pid_c,pid_d,status;
-    slowProcess(1);
-    printf("Process A will now create Processes B\n");
-    pid_b = fork();
-    if(pid_b<0){//error
-        printf("Failed To create Process B\n");
+    //create process A:
+    pid_t pid_a = fork();
+    if(pid_a<0){//error
+        printf("Error in creating process A\n");
     }
-    else if(pid_b>0){ // in Process A
-        printf("Process A will create Process C\n");
-        pid_c = fork(); //create process c
-        if(pid_c<0){//error
-            printf("Failed To create Process C\n");
+    else if(pid_a == 0){//in process A:
+        printf("Process A with PID: %ld has been created\n",(long)getpid);
+        
+        //create process B and C
+        pid_t pid_b, pid_c;
+        pid_b = fork();
+        if(pid_b != 0) pid_c = fork();
+
+        //deal with different cases for Processes B and C
+        if((pid_b < 0) || (pid_c < 0)){ //either or both had error in creation
+            if(pid_b < 0 && pid_c < 0 ){ // both less than zero -> failed to create
+                printf("Processes B and C have failed to start\n");
+            }
+            else{
+                char processName = (pid_b < 0 ) ? "B":"C";
+                printf("Process %c has failed to start.\n");
+            }
         }
-        else if(pid_c>0){// in process A
-            printf("Process A will now wait for Process B and C to terminate.\n");
-            int stat;
-           while(wait(&status)>0){
-               stat = WEXITSTATUS(status);
-               char processName = (stat==B) ? 'B':'C';
-               printf("Process %c has terminated.\n",processName);
-           }
-           printf("Process A will now termniate\n");
-        }
-        else{// this is process C, since here pid_c == 0
-            processC();
-        }
+        else if()
     }
-    else{// this is process B, here pid_b == 0
-        processB();
-    }
-    
+
 }
 
 
-/* method that will carry out the tasks for process B*/
-void processB(){
-    printf("Process B has started.\n");
-    slowProcess(1);
-    printf("Process B will now create Process D.\n");
-    int pid_d = fork();
-    if(pid_d<0){//error
-        printf("Process D failed to start.\n");
+
+
+/* 
+    Auxillary function provided by instructor to determine conditions
+    under which a process is terminated
+*/
+void explain_wait_status(pid_t pid, int status){
+    if(WIFEXITED(status)){
+        fprintf(stderr,"Child with PID= %ld terminated normally, exit status = %d\n",
+                (long)pid,WEXITSTATUS(status));
     }
-    else if(pid_d>0){// in process B
-        printf("Process B will wait for Process D to finish.\n");
-        int status;
-        wait(NULL);
-        exit(B);
+    else if(WIFSIGNALED(status)){
+        fprintf(stderr,"Child with PID = %ld was terminated by signal, signal = %d\n",
+                (long)pid,WTERMSIG(status));
     }
-    else{// in process D
-        processD();
-    }
-}
-
-/* Method to carry out tasks for Process C*/
-void processC(){
-    printf("Process C has started.\n");
-    slowProcess(1);
-    printf("Process C will now enter sleep.\n");
-    sleep(15);
-    exit(C);
-}
-
-/* Method to carry out tasks for Process D*/
-void processD(){
-    printf("Process D has started.\nProcess D will now enter sleep.\n");
-    sleep(15);
-    exit(D);
-}
-
-
-/*
-    Slow down execution of a process after certain events so that
-    the process tree can be better observed.
- */
-void slowProcess(int slowLevel){
-    if(slowLevel == 1){
-        // for(int i=0;i<10000;i++){
-        //     continue;
-        // }
-        sleep(5);
+    else if(WIFSTOPPED(status)){
+        fprintf(stderr,"Child with PID = %ld has been stopped by a signal, signo = %d\n",
+                (long)pid,WSTOPSIG(status));
     }
     else{
-        for(int i=0;i<2000;i++){
-            continue;
-        }
+        fprintf(stderr,"%s: Internal error: Unhandled case, PID = %ld, status = %d\n",
+                __func__, (long)pid, status);
+        exit(1);
     }
+    fflush(stderr);
 }
