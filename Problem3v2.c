@@ -61,6 +61,28 @@ int main(){
 void traverseTree(node* root, pid_t *pidLoc){
     if(root == NULL) return; //base case
 
+    //select exit code:
+    int exitcode;
+    //printf("%s",(root->name));
+    switch((root->name)[8]){
+        case 'A':
+            exitcode = A;
+            break;
+        case 'B':
+            exitcode = B;
+            break;
+        case 'C':
+            exitcode = C;
+            break;
+        case 'D':
+            exitcode = D;
+            break;
+        default:
+            exitcode = 9;
+            break;
+    }
+
+
     //create new process:
     pid_t pid = fork();
 
@@ -81,6 +103,10 @@ void traverseTree(node* root, pid_t *pidLoc){
             node* focusnode = root->children;
             traverseTree(focusnode,&(focusnode->pid));
         }
+        else{//no children
+            sleep(1);
+            exit(exitcode);
+        }
     }
     else{// in parent process
         *(pidLoc) = pid;
@@ -95,9 +121,9 @@ void traverseTree(node* root, pid_t *pidLoc){
         pid_waited_for = wait(&status);
         explain_wait_status(pid_waited_for,status);
         if(!pid_waited_for) counter++;
-    } while (counter<(root->num_children));
+    } while (!pid_waited_for);
 
-    exit(8);
+    exit(exitcode);
 }
 
 
