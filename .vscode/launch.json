@@ -22,7 +22,7 @@
                     "ignoreFailures": true
                 },
                 {
-                    "text": "-gdb-set follow-fork-mode parent"
+                    "text": "-gdb-set follow-fork-mode parent" 
                 }
             ],
             "preLaunchTask": "gcc build active file",
