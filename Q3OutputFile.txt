@@ -1,0 +1,17 @@
+Main/Root process from which tree will start has PID: 2350
+Process A with PID: 2355 has started. From parent Root(main) Process
+Process B with PID: 2356 has started. From parent Process A
+Process A will wait for its children to terminate.
+Process C with PID: 2357 has started. From parent Process A
+Process B will wait for its children to terminate.
+Process D with PID: 2358 has started. From parent Process B
+Child Process C with PID= 2357 terminated normally, exit status = 6
+Child Process D with PID= 2358 terminated normally, exit status = 10
+Child Process B with PID= 2356 terminated normally, exit status = 4
+Child Process A with PID= 2355 terminated normally, exit status = 2
+
+
+	Process A
+		Process B
+			Process D
+		Process C
